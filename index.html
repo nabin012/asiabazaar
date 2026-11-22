@@ -78,7 +78,7 @@ nav.top .wrap{display:flex;align-items:center;justify-content:space-between;heig
 .arw{position:absolute;top:58px;width:42px;height:42px;border-radius:50%;border:0;background:var(--gl);color:var(--gd);font-size:22px;font-weight:700;cursor:pointer;z-index:2;transition:background .2s}
 .arw:hover{background:var(--gb)}.arw.l{left:0}.arw.r{right:0}
 /* sticky bar */
-.bar{position:sticky;top:0;z-index:20;background:rgba(251,253,249,.82);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-bottom:1px solid transparent;transition:box-shadow .3s,border-color .3s;margin-top:40px}
+.bar{position:sticky;top:0;z-index:20;background:rgba(251,253,249,.94);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-bottom:1px solid transparent;transition:box-shadow .3s,border-color .3s;margin-top:40px}
 .bar.sc{box-shadow:0 6px 18px rgba(0,0,0,.06);border-color:var(--line)}
 .bar .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-top:14px;padding-bottom:14px}
 .fh h2{font-weight:800;font-size:34px;letter-spacing:-.5px;line-height:1.1}
@@ -210,7 +210,7 @@ body{background:#fff}
 @keyframes drift{0%{transform:translate(0,0) scale(1)}50%{transform:translate(60px,40px) scale(1.12)}100%{transform:translate(-40px,80px) scale(.95)}}
 .bgv{position:absolute;opacity:.16;font-size:42px;animation:bob 9s ease-in-out infinite;filter:grayscale(.15)}
 @keyframes bob{0%,100%{transform:translateY(0) rotate(var(--r,0deg))}50%{transform:translateY(-24px) rotate(calc(var(--r,0deg) + 12deg))}}
-main,.cats,.bar{position:relative}
+main,.cats{position:relative}
 /* hero decorations */
 .hcard{isolation:isolate}
 .hcard::before{content:"";position:absolute;width:360px;height:360px;right:18%;top:-120px;border-radius:50%;background:radial-gradient(circle,rgba(255,211,26,.28),transparent 65%);z-index:-1;animation:drift 18s ease-in-out infinite alternate}
@@ -233,7 +233,7 @@ nav.top{background:none!important;border:0!important;backdrop-filter:none!import
  border:1px solid rgba(255,255,255,.8);box-shadow:0 10px 30px rgba(46,125,50,.12),inset 0 1px 0 rgba(255,255,255,.9);transition:box-shadow .3s,background .3s,height .3s}
 .navin::after{content:"";position:absolute;left:22px;right:22px;bottom:-1px;height:3px;border-radius:3px;background:linear-gradient(90deg,#4caf50,#ffd31a,#e53935,#4caf50);background-size:300% 100%;animation:navline 6s linear infinite;opacity:.85}
 @keyframes navline{to{background-position:300% 0}}
-nav.top.sc .navin{background:rgba(255,255,255,.85);box-shadow:0 14px 34px rgba(46,125,50,.18);height:62px!important}
+nav.top.sc .navin{background:rgba(255,255,255,.95);box-shadow:0 14px 34px rgba(46,125,50,.18);height:62px!important}
 .brand .ic{display:inline-block;animation:bask 3.5s ease-in-out infinite;transform-origin:50% 90%}
 @keyframes bask{0%,70%,100%{transform:rotate(0)}76%{transform:rotate(-12deg) translateY(-3px)}84%{transform:rotate(10deg)}92%{transform:rotate(-4deg)}}
 .brand:hover .ic{animation-duration:.8s}
@@ -256,7 +256,9 @@ nav.top.sc .navin{background:rgba(255,255,255,.85);box-shadow:0 14px 34px rgba(4
 .ft2 .wave{position:absolute;top:-1px;left:0;width:200%;height:90px;transform:translateY(-99%);animation:wavex 14s linear infinite}
 .ft2 .wave .w1{fill:#1f6b22}.ft2 .wave .w2{fill:#4caf50;opacity:.35}
 @keyframes wavex{to{transform:translate(-50%,-99%)}}
-.ft2{overflow:visible}.ft2 .fls{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.ft2{overflow:visible;overflow-x:clip}
+html,body{overflow-x:clip;max-width:100%}
+@supports not (overflow-x:clip){html,body{overflow-x:hidden}}.ft2 .fls{position:absolute;inset:0;overflow:hidden;pointer-events:none}
 .fl{position:absolute;bottom:-40px;opacity:.0;animation:rise linear infinite;filter:drop-shadow(0 4px 6px rgba(0,0,0,.25))}
 @keyframes rise{0%{transform:translateY(0) rotate(0);opacity:0}10%{opacity:.55}80%{opacity:.4}100%{transform:translateY(-420px) rotate(40deg);opacity:0}}
 .fgrid{position:relative;display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:26px;padding-top:56px;padding-bottom:40px}
