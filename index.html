@@ -176,6 +176,24 @@ footer p{font-size:14px;line-height:1.7;color:#444}
  .fab{left:0;right:0;bottom:0;gap:10px;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:rgba(255,255,255,.96);backdrop-filter:blur(10px);box-shadow:0 -6px 20px rgba(0,0,0,.08);border-top:1px solid var(--line)}.fab .pill{flex:1;justify-content:center;padding:13px 10px;font-size:15px;box-shadow:none;animation:none}.fab .pill.w{border:2px solid var(--gb)}
 }
 
+
+/* ===== most picked slider ===== */
+.mp{margin-top:26px;border-radius:24px;padding:20px 0 22px;background:linear-gradient(135deg,#fff8e1,#fffdf5 60%,#f1faf1);border:2px solid #ffe08a;position:relative;overflow:hidden}
+.mp .sh{padding:0 22px}.mp .sh h3{color:#b26a00}
+.mp .daily{background:#fff1c2;color:#9a5b00}.mp .daily i{background:#f5a300}
+.mtrack{overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+.mrow{display:flex;gap:16px;width:max-content;animation:mslide var(--dur,40s) linear infinite;padding:6px 0 10px}
+.mtrack:hover .mrow,.mtrack.hold .mrow{animation-play-state:paused}
+@keyframes mslide{to{transform:translateX(-50%)}}
+.mc{width:190px;flex:none;background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 6px 16px rgba(150,100,0,.12);border:1px solid #f3e6c4;position:relative;transition:transform .25s}
+.mc:hover{transform:translateY(-5px) scale(1.03)}
+.mc img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}
+.mc .rk{position:absolute;top:10px;left:10px;background:linear-gradient(135deg,#ffcf33,#f5a300);color:#5a3500;font-size:11px;font-weight:800;padding:4px 9px;border-radius:20px;box-shadow:0 3px 8px rgba(245,163,0,.4)}
+.mc .t{padding:10px 12px 12px}.mc .n{font-weight:600;font-size:15px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mc .s{font-size:12px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mc .p{margin-top:6px;font-weight:800;font-size:21px;color:var(--gd)}.mc .p span{font-size:12px;font-weight:500;color:var(--mut);margin-left:2px}
+@media (max-width:820px){.mp{padding:16px 0 16px;border-radius:20px;margin-top:18px}.mp .sh{padding:0 14px}.mc{width:150px;border-radius:14px}.mc .n{font-size:13px}.mc .p{font-size:18px}.mrow{gap:10px}}
+@media (prefers-reduced-motion:reduce){.mrow{animation:none}.mtrack{overflow-x:auto}}
 /* ===== opening intro ===== */
 #intro{position:fixed;inset:0;z-index:999;display:flex;align-items:center;justify-content:center;flex-direction:column;cursor:pointer;
  background:radial-gradient(circle at 50% 45%,#ffffff 0%,#f1faf1 45%,#dcefdc 100%);transition:clip-path .9s cubic-bezier(.7,0,.2,1),opacity .5s .5s}
@@ -913,6 +931,19 @@ const slug=t=>'s-'+t.toLowerCase().replace(/[^a-z0-9]+/g,'-');
 const esc=v=>String(v??'').replace(/[&<>"'`]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;'}[c]));
 const drive=m=>{const x=m.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:export=\w+&)?id=)([\w-]{20,})/);return x?`https://drive.google.com/thumbnail?id=${x[1]}&sz=w800`:m};
 const pic=i=>{const m=drive(String(i.img||'').trim());if(/^https:\/\/[^\s"'<>]+$/i.test(m))return esc(m);if(/^[a-z0-9_-]+$/i.test(m))return `img/${m}.webp`;return 'img/logo.webp'};
+
+/* ===== MOST PICKED (Vegetables) =====
+   Items shown in the sliding "Most Picked" strip, in this order.
+   In the Google Sheet you can also type "yes" in column K (Popular) to add an item. */
+const POPULAR = ["Okra","Chinese Okra","Mexican Squash","Persian Cucumber","Roma Tomato","Round Tomato","Cilantro","Chinese Eggplant","Indian Eggplant","Italian Eggplant"];
+function mostPicked(){const all=[];DATA.veg.forEach(x=>x.items.forEach(i=>all.push(i)));
+ const out=[];POPULAR.forEach(n=>{const i=all.find(x=>x.n.toLowerCase()==n.toLowerCase());if(i&&!out.includes(i))out.push(i)});
+ all.forEach(i=>{if(i.pop&&!out.includes(i))out.push(i)});return out}
+function mpHTML(){const its=mostPicked();if(!its.length)return '';
+ const card=(i,k)=>`<div class="mc"><span class="rk">⭐ #${k+1}</span><img src="${pic(i)}" alt="${esc(i.n)}" loading="lazy"><div class="t"><div class="n">${esc(i.n)}</div><div class="s">${esc(i.s)||'&nbsp;'}</div><div class="p">${esc(i.p)}<span>${esc(i.u)}</span></div></div></div>`;
+ const one=its.map(card).join('');
+ return `<section class="mp" id="s-most-picked"><div class="sh"><h3>⭐ Most Picked</h3><span>Customer favourites</span><span class="daily"><i></i>Live prices</span></div>
+ <div class="mtrack"><div class="mrow" style="--dur:${Math.max(24,its.length*4.5)}s">${one}${one}</div></div></section>`}
 function render(){const s=q.value.trim().toLowerCase();let h='',c='',n=0,k=0;
  const offers=[];DATA[tab].forEach(x=>x.items.forEach(i=>{if(i.deal||i.old)offers.push(i)}));
  const secs=(offers.length?[{t:'Special Offers',items:offers,off:true}]:[]).concat(DATA[tab]);
@@ -924,9 +955,10 @@ function render(){const s=q.value.trim().toLowerCase();let h='',c='',n=0,k=0;
   its.map(i=>`<article class="card"><div class="ph"><img src="${pic(i)}" alt="${esc(i.n)}" loading="lazy"></div>${i.deal||sec.frozen||i.old?`<span class="tag">${esc(i.deal||(i.old?'SALE':'Frozen'))}</span>`:''}
    <div class="info"><div><div class="nm">${esc(i.n)}</div><div class="sb">${esc(i.s)}</div></div>
    <div class="prow"><div class="pr">${i.old?`<s>${esc(i.old)}</s>`:''}<b>${esc(i.p)}</b><span>${esc(i.u)}</span></div></div></div></article>`).join('')+'</div></section>';}
+ if(tab=='veg'&&!s){h=mpHTML()+h;c=`<a class="circ" href="#s-most-picked"><div class="im"><img src="${pic(mostPicked()[0]||{})}" alt=""></div><p>⭐ Most Picked</p></a>`+c}
  list.innerHTML=h;circles.innerHTML=c;empty.style.display=n?'none':'block';$('#count').textContent=(tab=='veg'?'🥬 Vegetable & fruit':'🥩 Meat & chicken')+' prices updated daily';
  if(innerWidth<=820)list.querySelectorAll('.card').forEach(x=>{const t=x.querySelector('.tag');if(t)x.querySelector('.info>div').appendChild(t)});
- reveal();spy();}
+ reveal();spy();const tr=list.querySelector('.mtrack');if(tr){tr.addEventListener('touchstart',()=>tr.classList.add('hold'),{passive:true});tr.addEventListener('touchend',()=>setTimeout(()=>tr.classList.remove('hold'),1500))}}
 let io;function reveal(){if(io)io.disconnect();const cards=[...list.querySelectorAll('.card')];
  if(!('IntersectionObserver' in window)){cards.forEach(c=>c.classList.add('in'));return}
  io=new IntersectionObserver(es=>{let k=0;es.forEach(e=>{if(e.isIntersecting){const c=e.target;c.style.transitionDelay=(k++*60)+'ms';c.classList.add('in');io.unobserve(c);setTimeout(()=>c.style.transitionDelay='',900)}})},{rootMargin:'0px 0px -6% 0px'});
@@ -954,7 +986,7 @@ function fromSheet(t){const all=parseCSV(t).slice(1);const u=all.find(r=>/^\s*up
  for(const r of rows){const tb=/meat/i.test(r[0])?'meat':'veg';const st=(r[1]||'Other').trim();let sec=D[tb].find(x=>x.t==st);
   if(!sec){sec={t:st,items:[],frozen:/frozen/i.test(st)};D[tb].push(sec)}
   const pr=String(r[4]||'').trim(),num=/^\$?\d+(\.\d+)?$/.test(pr),u=String(r[5]||'').trim().toLowerCase();
-  sec.items.push({n:r[2].trim(),s:(r[3]||'').trim(),p:num?'$'+Number(pr.replace('$','')).toFixed(2):pr,u:num?(u=='each'?'each':u?'/'+u:'/lb'):'',img:(r[8]||'').trim(),deal:(r[6]||'').trim(),old:(()=>{const o=String(r[9]||'').trim();return o?(/^\$?\d+(\.\d+)?$/.test(o)?'$'+Number(o.replace('$','')).toFixed(2):o):''})()})}
+  sec.items.push({n:r[2].trim(),s:(r[3]||'').trim(),p:num?'$'+Number(pr.replace('$','')).toFixed(2):pr,u:num?(u=='each'?'each':u?'/'+u:'/lb'):'',img:(r[8]||'').trim(),deal:(r[6]||'').trim(),pop:/^\s*(yes|y|true)\s*$/i.test(String(r[10]||'')),old:(()=>{const o=String(r[9]||'').trim();return o?(/^\$?\d+(\.\d+)?$/.test(o)?'$'+Number(o.replace('$','')).toFixed(2):o):''})()})}
  return D}
 function start(){if(location.hash==='#meat')document.querySelector('[data-t=meat]').click();else render()}
 if(/^https:\/\/docs\.google\.com\//.test(SHEET_CSV_URL)){fetch(SHEET_CSV_URL+(SHEET_CSV_URL.includes('?')?'&':'?')+'t='+Date.now()).then(r=>r.text()).then(t=>{const D=fromSheet(t);if(D.veg.length||D.meat.length)DATA=D;$('#upd').textContent=window.SHEET_UPD||UPDATED;start()}).catch(start)}else start();
