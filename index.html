@@ -347,6 +347,10 @@ body.go .hcard{animation:zoomin .8s cubic-bezier(.2,.9,.3,1.1) both}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.card{opacity:1;transform:none}}
 /* phone: title + search scroll away normally */
 @media(max-width:760px){html{scroll-padding-top:90px!important}.bar{position:relative!important;top:auto!important;z-index:2;background:transparent!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;box-shadow:none!important;border-color:transparent!important}}
+/* phone: smart floating search (hides scrolling down, slides in scrolling up) */
+#qs{display:none}
+@media(max-width:760px){#qs{display:block;position:fixed;left:12px;right:12px;top:78px;z-index:45;padding:6px;border-radius:40px;background:rgba(255,255,255,.92);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:0 10px 26px rgba(30,80,30,.16);transform:translateY(-130%);opacity:0;pointer-events:none;transition:transform .32s cubic-bezier(.2,.8,.2,1),opacity .25s}
+#qs.on{transform:none;opacity:1;pointer-events:auto}#qs .search{width:100%;padding:11px 16px 11px 44px;font-size:16px;border-color:#cfe8cf;background-color:#fff}}
 </style></head><body class="pre">
 <div id="intro" aria-hidden="true"><span class="ring"></span><span class="ring b"></span><span class="pop" style="--x:-150px;--y:-120px;--r:-15deg;animation-delay:0.5s">🥬</span><span class="pop" style="--x:150px;--y:-130px;--r:12deg;animation-delay:0.6s">🍅</span><span class="pop" style="--x:-170px;--y:40px;--r:-10deg;animation-delay:0.7s">🍗</span><span class="pop" style="--x:170px;--y:50px;--r:20deg;animation-delay:0.8s">🥕</span><span class="pop" style="--x:-90px;--y:150px;--r:8deg;animation-delay:0.9s">🧅</span><span class="pop" style="--x:100px;--y:150px;--r:-20deg;animation-delay:1.0s">🌶️</span><span class="pop" style="--x:0px;--y:-185px;--r:0deg;animation-delay:0.75s">🥩</span>
 <div class="bk">🧺</div><div class="nm"><span class="a" style="animation-delay:0.55s">A</span><span class="a" style="animation-delay:0.61s">s</span><span class="a" style="animation-delay:0.67s">i</span><span class="a" style="animation-delay:0.73s">a</span><span class="z" style="animation-delay:0.79s">B</span><span class="z" style="animation-delay:0.85s">a</span><span class="z" style="animation-delay:0.91s">z</span><span class="z" style="animation-delay:0.97s">a</span><span class="z" style="animation-delay:1.03s">a</span><span class="z" style="animation-delay:1.09s">r</span></div><div class="tg">CAFÉ &amp; GROCERY</div><div class="bar2"><i></i></div><div class="skip">TAP TO SKIP</div></div>
@@ -390,6 +394,7 @@ body.go .hcard{animation:zoomin .8s cubic-bezier(.2,.9,.3,1.1) both}
 <div class="fbot"><div class="wrap"><span>© <span id="yr"></span> Asia Bazaar Café &amp; Grocery · Wichita, KS</span><span class="nt">Prices may change — in-store prices apply. While supplies last.</span>
  <button class="totop" id="totop" aria-label="Back to top">↑</button></div></div>
 </footer>
+<div id="qs" aria-hidden="true"><input class="search" id="qsi" type="search" placeholder="Search okra, goat, chicken…" aria-label="Search items" tabindex="-1"></div>
 <div class="fab"><a class="pill w" href="https://maps.app.goo.gl/ZVBx3tENkFNd5Eot5" target="_blank" rel="noopener">📍 Directions</a><a class="pill g" href="tel:+13166122700">📞 Call Asia Bazaar</a></div>
 <script>
 /* ===== GOOGLE SHEET LINK =====
@@ -1114,6 +1119,14 @@ function spy(){const cs=[...circles.querySelectorAll('.circ')],secs=cs.map(a=>do
  window.onscroll=()=>{bar.classList.toggle('sc',bar.getBoundingClientRect().top<=0);clearTimeout(spy.t);spy.t=setTimeout(f,60)};f()}
 document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('on'));b.classList.add('on');tab=b.dataset.t;q.value='';list.classList.add('fade');setTimeout(()=>list.classList.remove('fade'),260);render()});
 q.oninput=render;
+(()=>{const qs=document.getElementById('qs'),qi=document.getElementById('qsi');let ly=scrollY,tk=0;
+ const show=v=>{qs.classList.toggle('on',v);qs.setAttribute('aria-hidden',v?'false':'true');qi.tabIndex=v?0:-1};
+ addEventListener('scroll',()=>{if(tk)return;tk=requestAnimationFrame(()=>{tk=0;const y=scrollY,past=bar.getBoundingClientRect().bottom<70,end=y+innerHeight>document.documentElement.scrollHeight-260;
+  if(!past||end){if(document.activeElement!==qi)show(false)}else if(y<ly-6)show(true);else if(y>ly+6&&document.activeElement!==qi&&!qi.value)show(false);ly=y})},{passive:true});
+ qi.addEventListener('input',()=>{q.value=qi.value;render();const t=list.getBoundingClientRect().top+scrollY-150;if(scrollY>t+40)scrollTo({top:t,behavior:'instant'});ly=scrollY;show(true)});
+ qi.addEventListener('keydown',e=>{if(e.key==='Enter')qi.blur()});
+ q.addEventListener('input',()=>{qi.value=q.value});
+ document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>{qi.value=''}));})();
 $('.arw.l').onclick=()=>circles.scrollBy({left:-340});$('.arw.r').onclick=()=>circles.scrollBy({left:340});
 
 /* opening intro */
